@@ -1,0 +1,16 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+.message {
+	padding: 10px;
+	border: 1px solid gray;
+}
+#load-data {
+	height: 400px;
+	overflow-y: auto;
+}
+.end-message a {
+	text-decoration: none;
+	
+}

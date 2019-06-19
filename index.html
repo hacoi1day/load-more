@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Load more</title>
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.js"
+	integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+	crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/0355850d71.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<h2 class="text-center">
+					Auto load more
+				</h2>
+				<hr>
+			</div>
+			<div class="col-6 offset-3">
+				<div class="message">
+					<div id="load-data"></div>
+					<div id="load-data-message" class="text-center"></div>
+					<div class="end-message text-center">
+						<a href="">Toàn bộ thông báo</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var limit = 5;
+			var start = 0;
+			var action = 'inactive';
+			function load_data(limit, start) {
+				$.ajax({
+					url: 'fetch.php',
+					type: 'POST',
+					dataType: 'html',
+					data: {
+						limit: limit,
+						start: start
+					},
+					cache: false
+				})
+				.done(function(data) {
+					$('#load-data').append(data);
+					if(data == '') {
+						$('#load-data-message').html('Hết bài viết');
+						action = 'active';
+					} else {
+						$('#load-data-message').html('<i class="fas fa-spinner fa-spin"></i>')
+						action = 'inactive';
+					}
+				});
+			}
+			if(action == 'inactive') {
+				action = 'active';
+				load_data(limit, start);
+			}
+			$('#load-data').scroll(function() {
+				if(($(window).scrollTop() + $(window).height()) > $('#load-data').height() && action == 'inactive') {
+					console.log(1);
+					action = 'active';
+					start = start + limit;
+					setTimeout(function() {
+						load_data(limit,start)
+					}, 1000);
+				}
+			});
+			// window.onscroll = function(){
+			//   	console.log(checkScrollSpeed());
+			// };
+		});
+		var checkScrollSpeed = (function(settings){
+			settings = settings || {};
+			var lastPos, newPos, timer, delta, 
+	        delay = settings.delay || 50; // in "ms" (higher means lower fidelity )
+	        function clear() {
+	        	lastPos = null;
+	        	delta = 0;
+	        }
+	        clear();
+	        return function(){
+	        	newPos = window.scrollY;
+				if (lastPos != null) { // && newPos < maxScroll 
+					delta = newPos -  lastPos;
+				}
+				lastPos = newPos;
+				clearTimeout(timer);
+				timer = setTimeout(clear, delay);
+				return delta;
+	  		};
+		})();
+</script>
+</body>
+</html>
